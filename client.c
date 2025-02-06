@@ -11,14 +11,21 @@
 /* ************************************************************************** */
 
 #include "minitalk.h"
+#include <signal.h>
+#include <stdlib.h>
 
 int main(int ac, char **av)
 {
-	if (ac != 3)
+	int	server_pid;
+
+	if (ac != 2)
 	{
-		printf("No args were given\n");
+		printf("Invalid number of arguments\n");
 		return (0);
 	}
-	printf("I was given:\n%s\n%s \n", av[1], av[2]);
+	server_pid = atoi(av[1]);
+	for (int i = 0; i < 33; i++)
+		kill(server_pid, i);
+	kill(server_pid, SIGINT);
 	return (0);
 }
