@@ -11,8 +11,6 @@
 /* ************************************************************************** */
 
 #include "minitalk.h"
-#include <signal.h>
-#include <stdlib.h>
 
 int main(int ac, char **av)
 {

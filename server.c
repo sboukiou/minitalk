@@ -1,8 +1,4 @@
-#include <signal.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <stdio.h>
+#include "minitalk.h"
 
 /*void properly_quit(int signal)*/
 /*{*/
