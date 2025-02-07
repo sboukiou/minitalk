@@ -19,6 +19,8 @@ LIBFT_SRC=$(LIBFT_DIR)/ft_atoi.c   $(LIBFT_DIR)/ft_calloc.c   $(LIBFT_DIR)/ft_me
 $(LIBFT_DIR)/ft_bzero.c  $(LIBFT_DIR)/ft_isdigit.c  $(LIBFT_DIR)/ft_split.c   $(LIBFT_DIR)/ft_strlcpy.c  $(LIBFT_DIR)/ft_strncmp.c
 LIBFT_OBJ= $(LIBFT_SRC:%.c=%.o)
 
+DEPS=$(LIBFT_OBJS) $(PRINTF_OBJ)
+
 PRINTF_SRC=$(PRINTF_DIR)/format_handler.c  $(PRINTF_DIR)/ft_printf.c  $(PRINTF_DIR)/printers.c
 PRINTF_OBJ= $(PRINTF_SRC:%.c=%.o)
 
@@ -27,11 +29,11 @@ OBJ_ALL= $(SRV_OBJ) $(CL_OBJ) $(LIBFT_OBJ) $(PRINTF_OBJ)
 
 all: $(SERVER) $(CLIENT)
 
-$(SERVER):  $(SRV_OBJ)
-	$(BUILD) $(SERVER) $^
+$(SERVER): $(PRINTF_OBJ) $(LIBFT_OBJ) $(SRV_OBJ)
+	$(BUILD) $(SERVER) $^ -lm
 
-$(CLIENT):  $(CL_OBJ)
-	$(BUILD) $(CLIENT) $^
+$(CLIENT): $(PRINTF_OBJ) $(LIBFT_OBJ) $(CL_OBJ)
+	$(BUILD) $(CLIENT) $^ -lm
 
 printf: $(LIBFT_OBJ) $(PRINTF_OBJ)
 	$(BUILD) printf $(LIBFT_OBJ) $(PRINTF_OBJ) $(PRINTF_DIR)/main.c
@@ -40,5 +42,4 @@ clean:
 	$(RM) $(OBJ_ALL)
 
 fclean: clean
-	$(RM) $(CLIENT) $(SERVER)
-
+	$(RM) $(CLIENT) $(SERVER) printf
