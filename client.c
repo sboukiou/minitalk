@@ -12,36 +12,6 @@
 
 #include "minitalk.h"
 
-void	send_byte(int byte, pid_t server_pid)
-{
-
-	int idx = 0;
-	while (idx < 8)
-	{
-		if (byte % 2)
-			kill(server_pid, idx + 15);
-		byte = byte / 2;
-		idx++;
-		sleep(0.4);
-	}
-	kill (server_pid, SIGINT);
-}
-
-void	send_message(char *message, pid_t server_pid)
-{
-	int	idx;
-
-	if (!message)
-		return ;
-	idx = 0;
-	while (message[idx])
-	{
-		send_byte(message[idx], server_pid);
-		idx++;
-	}
-	kill(server_pid, 11);
-}
-
 int main(int ac, char **av)
 {
 	int	server_pid;
@@ -52,6 +22,7 @@ int main(int ac, char **av)
 		return (0);
 	}
 	server_pid = ft_atoi(av[1]);
-	send_message(av[2], server_pid);
+	kill(server_pid, SIGUSR1);
+	kill(server_pid, SIGUSR2);
 	return (0);
 }
