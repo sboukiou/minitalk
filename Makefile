@@ -15,13 +15,14 @@ OBJ_ALL= $(SRV_OBJ) $(CL_OBJ)
 %.o: %.c
 	$(CMP) $<
 
+all: $(SERVER) $(CLIENT)
+
 $(SERVER):  $(SRV_OBJ)
 	$(BUILD) $(SERVER) $^
 
 $(CLIENT):  $(CL_OBJ)
 	$(BUILD) $(CLIENT) $^
 
-all: $(SERVER) $(CLIENT)
 
 clean:
 	$(RM) $(OBJ_ALL)
