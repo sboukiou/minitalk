@@ -10,4 +10,6 @@
 int	print_char(char c);
 int	print_integer(long long number);
 int	print_string(char *str);
+int	ft_printf(const char *buffer, ...);
+int	handle_format(const char *buffer, va_list args, int idx);
 #endif
