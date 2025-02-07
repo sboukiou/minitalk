@@ -1,16 +1,29 @@
 #include "minitalk.h"
+#include <math.h>
 
-/*void properly_quit(int signal)*/
-/*{*/
-/*	printf("Recieved a %d signal , quitting ...\n", signal);*/
-/*	exit(0);*/
-/*}*/
+char byte = 0;
 
 void	print_signal(int signal)
 {
-	printf("recieved --> %d\n", signal);
+	/*ft_printf("Signal is %d\n", signal);*/
 	if (signal == SIGINT)
+	{
+		ft_printf("%c", byte);
+		byte = 0;
+	}
+	else if (signal == 11)
+	{
+		ft_printf("\nMessage ended. leaving .. \n");
 		exit(0);
+	}
+	else
+		byte += pow(2, signal - 15);
+}
+
+void	handle_zero_signal(int signal)
+{
+	ft_printf("A zero -> %d signal recieved\n", signal);
+	exit(0);
 }
 
 
@@ -21,12 +34,10 @@ int main(int ac, char **av)
 
 	(void)ac;
 	(void)av;
-	/*signal(SIGINT, properly_quit);*/
-	printf("Sigint is %d\n", SIGINT);
-	for (int i = 2; i < 33; i++)
+	for (int i = 20; i < 30; i++)
 		signal(i, print_signal);
 	my_pid = getpid();
-	printf("My Process ID is %d\n", my_pid);
+	ft_printf("My Process ID is %d\n", my_pid);
 	i = 0;
 	while (1)
 		i++;
