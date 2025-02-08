@@ -12,9 +12,25 @@
 
 #include "minitalk.h"
 
+void	decode_byte(int byte, int server_pid)
+{
+	while (byte > 0)
+	{
+		if (byte % 2)
+			kill(server_pid, SIGUSR1);
+		else
+			kill(server_pid, SIGUSR2);
+		byte = byte / 2;
+		sleep(0.5);
+	}
+	kill(server_pid, SIGINT);
+	sleep(0.5);
+}
+
 int main(int ac, char **av)
 {
 	int	server_pid;
+	int	idx;
 
 	if (ac != 3)
 	{
@@ -22,7 +38,12 @@ int main(int ac, char **av)
 		return (0);
 	}
 	server_pid = ft_atoi(av[1]);
-	kill(server_pid, SIGUSR1);
-	kill(server_pid, SIGUSR2);
+	idx = 0;
+	while (av[2][idx])
+	{
+		decode_byte(av[2][idx], server_pid);
+		idx++;
+	}
+	decode_byte('\n', server_pid);
 	return (0);
 }
