@@ -1,21 +1,25 @@
 #include "minitalk.h"
 #include <math.h>
 
-char byte = 0;
+int byte = 0;
+int	idx = 0;
 
 void	print_signal(int signal)
 {
-	if (signal == SIGINT)
+	if (signal == SIGUSR1)
 	{
-		ft_printf("Exiting \n");
-		exit(0);
+		/*ft_printf("recieved a 1\n");*/
+		byte += pow(2, idx);
+		idx++;
 	}
-	else if (signal == SIGUSR1)
-		ft_printf("Sigusr1 tirggered .. \n");
 	else if (signal == SIGUSR2)
-		ft_printf("Sigusr2 tirggered .. \n");
-	else
-		return ;
+		idx++;
+	else if (signal == SIGINT)
+	{
+		ft_printf("%c", byte);
+		idx = 0;
+		byte = 0;
+	}
 }
 
 int main(int ac, char **av)
@@ -26,9 +30,11 @@ int main(int ac, char **av)
 	(void)av;
 	signal(SIGUSR1, print_signal);
 	signal(SIGUSR2, print_signal);
+	signal(SIGINT, print_signal);
 	my_pid = getpid();
 	ft_printf("My Process ID is %d\n", my_pid);
+	int i = 1;
 	while (1)
-		pause();
+		i += 0;
 	return (0);
 }
