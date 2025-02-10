@@ -21,10 +21,10 @@ void	decode_byte(int byte, int server_pid)
 		else
 			kill(server_pid, SIGUSR2);
 		byte = byte / 2;
-		sleep(0.5);
+		sleep(0.1);
 	}
 	kill(server_pid, SIGINT);
-	sleep(0.5);
+	sleep(0.1);
 }
 
 int main(int ac, char **av)
