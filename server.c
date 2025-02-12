@@ -1,40 +1,36 @@
 #include "minitalk.h"
-#include <math.h>
 
-int byte = 0;
-int	idx = 0;
+t_serverinfo	server_info;
 
-void	print_signal(int signal)
-{
-	if (signal == SIGUSR1)
+static void handler(int signal, siginfo_t *signal_info, void *context) {
+	(void)context;
+	/*(void)signal_info;*/
+	if (signal == SIGINT)
 	{
-		/*ft_printf("recieved a 1\n");*/
-		byte += pow(2, idx);
-		idx++;
+		ft_printf("%c", server_info.byte);
+		server_info.idx = 0;
+		server_info.byte = '\0';
 	}
-	else if (signal == SIGUSR2)
-		idx++;
-	else if (signal == SIGINT)
+	else
 	{
-		ft_printf("%c", byte);
-		idx = 0;
-		byte = 0;
+		if (signal == SIGUSR1)
+			server_info.byte += _pow(2, server_info.idx);
+		server_info.idx++;
 	}
+	kill(signal_info->si_pid, SIGUSR2);
 }
 
-int main(int ac, char **av)
-{
-	pid_t	my_pid;
-
-	(void)ac;
-	(void)av;
-	signal(SIGUSR1, print_signal);
-	signal(SIGUSR2, print_signal);
-	signal(SIGINT, print_signal);
-	my_pid = getpid();
-	ft_printf("My Process ID is %d\n", my_pid);
-	int i = 1;
+int main() {
+    struct sigaction signal_data;
+    signal_data.sa_sigaction = handler;
+    sigemptyset(&signal_data.sa_mask);
+    signal_data.sa_flags = SA_SIGINFO;
+    if (sigaction(SIGUSR1, &signal_data, NULL) == -1 || sigaction(SIGUSR2, &signal_data, NULL) == -1 || sigaction(SIGINT, &signal_data, NULL) == -1) {
+		exit(0);
+    }
+	ft_printf("%d\n", getpid());
+	int	idx;
 	while (1)
-		i += 0;
-	return (0);
+		idx += 0;
+
 }
