@@ -3,6 +3,9 @@ BUILD= cc -Wall -Werror -Wextra -o
 LIBFT_DIR=./dependencies/libft
 PRINTF_DIR=./dependencies/ft_printf
 
+UTILS=utils.c
+UTILS_OBJ=$(UTILS:%.c=%.o)
+
 SERVER=server
 CLIENT=client
 
@@ -24,16 +27,16 @@ DEPS=$(LIBFT_OBJS) $(PRINTF_OBJ)
 PRINTF_SRC=$(PRINTF_DIR)/format_handler.c  $(PRINTF_DIR)/ft_printf.c  $(PRINTF_DIR)/printers.c
 PRINTF_OBJ= $(PRINTF_SRC:%.c=%.o)
 
-OBJ_ALL= $(SRV_OBJ) $(CL_OBJ) $(LIBFT_OBJ) $(PRINTF_OBJ)
+OBJ_ALL= $(SRV_OBJ) $(CL_OBJ) $(LIBFT_OBJ) $(PRINTF_OBJ) $(UTILS_OBJ)
 
 
 all: $(SERVER) $(CLIENT)
 
-$(SERVER): $(PRINTF_OBJ) $(LIBFT_OBJ) $(SRV_OBJ)
-	$(BUILD) $(SERVER) $^ -lm
+$(SERVER): $(PRINTF_OBJ) $(LIBFT_OBJ) $(SRV_OBJ) $(UTILS_OBJ)
+	$(BUILD) $(SERVER) $^
 
-$(CLIENT): $(PRINTF_OBJ) $(LIBFT_OBJ) $(CL_OBJ)
-	$(BUILD) $(CLIENT) $^ -lm
+$(CLIENT): $(PRINTF_OBJ) $(LIBFT_OBJ) $(CL_OBJ) $(UTILS_OBJ)
+	$(BUILD) $(CLIENT) $^
 
 printf: $(LIBFT_OBJ) $(PRINTF_OBJ)
 	$(BUILD) printf $(LIBFT_OBJ) $(PRINTF_OBJ) $(PRINTF_DIR)/main.c
@@ -43,3 +46,4 @@ clean:
 
 fclean: clean
 	$(RM) $(CLIENT) $(SERVER) printf
+re: fclean all
