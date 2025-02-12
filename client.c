@@ -12,24 +12,29 @@
 
 #include "minitalk.h"
 
-void	decode_byte(int byte, int server_pid)
+void	signal_acknow(int signal)
 {
-	while (byte > 0)
-	{
-		if (byte % 2)
-			kill(server_pid, SIGUSR1);
-		else
-			kill(server_pid, SIGUSR2);
-		byte = byte / 2;
-		sleep(0.1);
-	}
-	kill(server_pid, SIGINT);
-	sleep(0.1);
+	(void)signal;
+}
+
+void	send_one_byte(char byte, int server_pid)
+{
+		while (byte)
+		{
+			if (byte % 2 == 0)
+				kill(server_pid, SIGUSR2);
+			else if (byte % 2 == 1)
+				kill(server_pid, SIGUSR1);
+			byte = byte / 2;
+			pause();
+		}
+		kill(server_pid, SIGINT);
 }
 
 int main(int ac, char **av)
 {
 	int	server_pid;
+	int	byte;
 	int	idx;
 
 	if (ac != 3)
@@ -37,13 +42,17 @@ int main(int ac, char **av)
 		ft_printf("Invalid number of arguments\n");
 		return (0);
 	}
+	signal(SIGUSR2, signal_acknow);
+	signal(SIGUSR1, signal_acknow);
 	server_pid = ft_atoi(av[1]);
 	idx = 0;
 	while (av[2][idx])
 	{
-		decode_byte(av[2][idx], server_pid);
+		byte = av[2][idx];
+		send_one_byte(byte, server_pid);
+		pause();
 		idx++;
 	}
-	decode_byte('\n', server_pid);
-	return (0);
+	send_one_byte('\n', server_pid);
+return (0);
 }
