@@ -36,7 +36,8 @@
 
 
 ## Resources:
+\
 [The linux programming interface](https://broman.dev/download/The%20Linux%20Programming%20Interface.pdf) is good book for Unix prorgrammig in genral
-and has some good chapters talking about signals in details.
-[Linux man pages](https://linux.die.net/man/) The default option, searche engine for unix programming.
-[Stackoverflow Signals](https://stackoverflow.com/search?q=signals+in+C)
+and has some good chapters talking about signals in details.\
+[Linux man pages](https://linux.die.net/man/) The default option, searche engine for unix programming.\
+[Stackoverflow Signals](https://stackoverflow.com/search?q=signals+in+C)\
