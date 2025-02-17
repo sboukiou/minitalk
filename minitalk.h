@@ -7,17 +7,26 @@
 #include <signal.h>
 #include <stdlib.h>
 
+/*Defining Macros*/
+# define SIGPING 0
+
 
 /*Including dependencies -> libft + ft_printf*/
 #include "./dependencies/libft/libft.h"
 #include "./dependencies/ft_printf/ft_printf.h"
 
 /* Defined costum types*/
-typedef struct s_serverinfo
+typedef struct s_tracker
 {
 	int	byte;
-	int	idx;
-}	t_serverinfo;
+	int	bit_counter;
+	int	byte_counter;
+	char	buffer[1024];
+}	t_tracker;
+
+/*Signals handlers functions*/
+/*static void server_handler(int signal, siginfo_t *signal_info, void *context);*/
+void	signal_acknow(int signal);
 
 /*Prototypes for utils functions defined int --> utils.c */
 int _pow(int base, int power);

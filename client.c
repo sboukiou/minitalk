@@ -6,53 +6,88 @@
 /*   By: sboukiou <sboukiou@1337.ma>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 15:48:25 by sboukiou          #+#    #+#             */
-/*   Updated: 2025/02/05 15:51:41 by sboukiou         ###   ########.fr       */
+/*   Updated: 2025/02/13 17:10:10 by sboukiou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
-void	signal_acknow(int signal)
+volatile sig_atomic_t signal_received = 0;
+
+void    send_one_byte(int byte, pid_t target_pid)
 {
-	(void)signal;
+    int  idx = 0;
+    while (byte > 0 || idx < 8)
+    {
+        if (byte > 0 && byte % 2)
+        {
+            kill(target_pid, SIGUSR1);
+            usleep(700);
+        }
+        else
+        {
+            kill(target_pid, SIGUSR2);
+            usleep(700);
+        }
+        byte = byte / 2;
+        idx++;
+    }
 }
 
-void	send_one_byte(char byte, int server_pid)
+void    send_string(char *string, pid_t target_pid)
 {
-		while (byte)
-		{
-			if (byte % 2 == 0)
-				kill(server_pid, SIGUSR2);
-			else if (byte % 2 == 1)
-				kill(server_pid, SIGUSR1);
-			byte = byte / 2;
-			pause();
-		}
-		kill(server_pid, SIGINT);
+    int     idx;
+
+    idx = 0;
+    while (string[idx])
+    {
+        send_one_byte(string[idx], target_pid);
+        idx++;
+    }
+    send_one_byte(3, target_pid);
+}
+
+void handle_sigusr(int signal)
+{
+    (void)signal;
+    signal_received += 1;
+    ft_printf("Recieved a message\n");
+}
+
+pid_t	check_arguments(int ac, char **av)
+{
+	pid_t	target_pid;
+
+	if (ac != 3)
+	{
+		ft_printf("Error: Invalid number of arguments\n");
+		return (-1);
+	}
+	target_pid = (pid_t)ft_atoi(av[1]);
+	if (target_pid <= 0)
+	{
+		ft_printf("Error: Invalid process Id given\n");
+		return (-1);
+	}
+	if (kill(target_pid, SIGPING) == -1)
+	{
+		ft_printf("Error: No process with that ID was found\n");
+		return (-1);
+	}
+	return (target_pid);
 }
 
 int main(int ac, char **av)
 {
-	int	server_pid;
-	int	byte;
-	int	idx;
+	pid_t	server_pid;
+	char	*message;
 
-	if (ac != 3)
-	{
-		ft_printf("Invalid number of arguments\n");
+	server_pid = check_arguments(ac, av);
+	if (server_pid == -1)
 		return (0);
-	}
-	signal(SIGUSR2, signal_acknow);
-	signal(SIGUSR1, signal_acknow);
-	server_pid = ft_atoi(av[1]);
-	idx = 0;
-	while (av[2][idx])
-	{
-		byte = av[2][idx];
-		send_one_byte(byte, server_pid);
-		pause();
-		idx++;
-	}
-	send_one_byte('\n', server_pid);
-return (0);
+	message = av[2];
+	ft_printf("Arguments are valid\n");
+    signal(SIGUSR1, handle_sigusr);
+    send_string(message, server_pid);
+	return (0);
 }
