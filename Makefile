@@ -19,7 +19,8 @@ SRV_OBJ=server.o
 	$(CMP) $< -o $@
 
 LIBFT_SRC=$(LIBFT_DIR)/ft_atoi.c   $(LIBFT_DIR)/ft_calloc.c   $(LIBFT_DIR)/ft_memset.c  $(LIBFT_DIR)/ft_strlcat.c  $(LIBFT_DIR)/ft_strlen.c\
-$(LIBFT_DIR)/ft_bzero.c  $(LIBFT_DIR)/ft_isdigit.c  $(LIBFT_DIR)/ft_split.c   $(LIBFT_DIR)/ft_strlcpy.c  $(LIBFT_DIR)/ft_strncmp.c
+$(LIBFT_DIR)/ft_bzero.c  $(LIBFT_DIR)/ft_isdigit.c  $(LIBFT_DIR)/ft_split.c   $(LIBFT_DIR)/ft_strlcpy.c  $(LIBFT_DIR)/ft_strncmp.c\
+$(LIBFT_DIR)/ft_itoa.c
 LIBFT_OBJ= $(LIBFT_SRC:%.c=%.o)
 
 DEPS=$(LIBFT_OBJS) $(PRINTF_OBJ)
