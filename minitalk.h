@@ -9,6 +9,7 @@
 
 /*Defining Macros*/
 # define SIGPING 0
+# define BUFFER_SIZE 4096
 
 
 /*Including dependencies -> libft + ft_printf*/
@@ -21,7 +22,7 @@ typedef struct s_tracker
 	int	byte;
 	int	bit_counter;
 	int	byte_counter;
-	char	buffer[1024];
+	char	buffer[BUFFER_SIZE];
 }	t_tracker;
 
 /*Signals handlers functions*/
