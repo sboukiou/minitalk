@@ -3,44 +3,27 @@
 /*                                                        :::      ::::::::   */
 /*   server.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sboukiou <sboukiou@1337.ma>                +#+  +:+       +#+        */
+/*   By: sboukiou <sboukiou@1339.ma>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 16:27:29 by sboukiou          #+#    #+#             */
-/*   Updated: 2025/02/13 17:37:34 by sboukiou         ###   ########.fr       */
+/*   Updated: 2025/02/18 11:33:25 by sboukiou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 #include <strings.h>
 
-t_tracker   tracker;
+volatile sig_atomic_t signal_received = 0;
+pid_t   client_pid = 0;
 
-void    siguser_handler(int signal, siginfo_t *signal_sender_info, void *ucontext)
+void    signal_handler(int signal, siginfo_t *signal_sender_info, void *ucontext)
 {
     (void)ucontext;
-    if (signal == SIGUSR2)
-        tracker.bit_counter++;
-    if (signal == SIGUSR1)
-    {
-        tracker.byte += _pow(2, tracker.bit_counter);
-        tracker.bit_counter++;
-    }
-    if (tracker.bit_counter == 8)
-    {
-        tracker.buffer[tracker.byte_counter] = tracker.byte;
-        tracker.byte_counter++;
-        tracker.bit_counter = 0;
-        if (tracker.byte == 3)
-        {
-            write(STDOUT_FILENO, tracker.buffer, tracker.byte_counter);
-                kill(signal_sender_info->si_pid, SIGUSR1);
-            ft_bzero(tracker.buffer, 1024);
-            tracker.byte_counter = 0;
-        }
-        tracker.byte = 0;
-    }
-}
 
+    signal_received = signal;
+    if (!client_pid)
+        client_pid = signal_sender_info->si_pid;
+}
 
 void	init_signal(void (*sighandler)(int, siginfo_t *, void *), int size, int *signals_list)
 {
@@ -67,19 +50,52 @@ void	init_signal(void (*sighandler)(int, siginfo_t *, void *), int size, int *si
 }
 int main(void)
 {
-    tracker.bit_counter = 0;
-    tracker.byte_counter = 0;
-    tracker.byte = 0;
-	pid_t	self_pid;
+    int bit_counter = 0;
+    int byte_counter  = 0;
+    char    buffer[4096];
+    unsigned char    byte = 0;
     int signals_list[31];
+	pid_t	self_pid;
+
+
     signals_list[0] = SIGUSR1;
     signals_list[1] = SIGUSR2;
+    ft_bzero(buffer, 4096);
 
-	init_signal(siguser_handler, 2, signals_list);
+	/*init_signal(siguser_handler, 2, signals_list);*/
+	init_signal(signal_handler, 2, signals_list);
 
 	self_pid = getpid();
 	ft_printf("Server Pid is : %d\n", self_pid);
 	while (1)
+    {
 		pause();
+        if (signal_received == SIGUSR2)
+            bit_counter++;
+        else if (signal_received == SIGUSR1)
+        {
+            byte += _pow(2, bit_counter);
+            bit_counter++;
+        }
+        if (bit_counter == 8 && signal_received)
+        {
+            buffer[byte_counter] = byte;
+            byte_counter++;
+            if (byte_counter == BUFFER_SIZE)
+            {
+                write(STDOUT_FILENO, buffer, byte_counter);
+                ft_bzero(buffer, BUFFER_SIZE);
+                byte_counter = 0;
+            }
+            else if (byte == 0)
+            {
+                write(STDOUT_FILENO, buffer, byte_counter);
+                byte_counter = 0;
+            }
+            bit_counter = 0;
+            byte = 0;
+        }
+        kill (client_pid, SIGUSR1);
+    }
 	return (0);
 }
